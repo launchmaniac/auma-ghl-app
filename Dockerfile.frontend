@@ -13,7 +13,8 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/frontend ./packages/frontend
 COPY packages/shared ./packages/shared
 
-# Install and build
+# Install and build (force dev mode to include devDependencies like tsup)
+ENV NODE_ENV=development
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @auma/shared build
 RUN pnpm --filter @auma/frontend build
