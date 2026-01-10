@@ -16,10 +16,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/backend ./packages/backend
 COPY packages/shared ./packages/shared
-WORKDIR /app/packages/shared
-RUN pnpm build
-WORKDIR /app/packages/backend
-RUN pnpm build
+RUN pnpm --filter @auma/shared build
+RUN pnpm --filter @auma/backend build
 
 FROM node:20-alpine AS production
 WORKDIR /app

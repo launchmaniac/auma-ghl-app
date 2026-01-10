@@ -16,10 +16,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/frontend ./packages/frontend
 COPY packages/shared ./packages/shared
-WORKDIR /app/packages/shared
-RUN pnpm build
-WORKDIR /app/packages/frontend
-RUN pnpm build
+RUN pnpm --filter @auma/shared build
+RUN pnpm --filter @auma/frontend build
 
 FROM nginx:alpine AS production
 COPY --from=build /app/packages/frontend/dist /usr/share/nginx/html
