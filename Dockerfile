@@ -16,12 +16,13 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @auma/shared build
 RUN pnpm --filter @auma/backend build
 
+# Create production deployment using pnpm deploy
+RUN pnpm --filter @auma/backend deploy --prod /app/deploy
+
 FROM node:20-alpine AS production
-WORKDIR /app
-COPY --from=build /app/packages/backend/dist ./dist
-COPY --from=build /app/packages/backend/package.json ./
-COPY --from=build /app/node_modules ./node_modules
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+WORKDIR /app
+COPY --from=build /app/deploy ./
 USER nodejs
 ENV NODE_ENV=production
 EXPOSE 3000
