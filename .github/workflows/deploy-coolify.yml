@@ -1,0 +1,131 @@
+# Product of Launch Maniac LLC, Las Vegas, Nevada - (725) 444-8200 support@launchmaniac.com
+
+name: Deploy to Coolify
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm -r type-check
+
+      - name: Lint
+        run: pnpm -r lint
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [backend, frontend, portal, admin, mcp-server]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: packages/${{ matrix.package }}/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.package }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.package }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+
+  deploy:
+    name: Deploy to Coolify
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    steps:
+      - name: Trigger Coolify deployment
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.COOLIFY_WEBHOOK_URL }}"
+
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Health check - Backend
+        run: |
+          curl -f https://api.launchmaniac.com/health || exit 1
+
+      - name: Health check - Frontend
+        run: |
+          curl -f https://app.launchmaniac.com/health || exit 1
+
+      - name: Health check - Portal
+        run: |
+          curl -f https://portal.launchmaniac.com/health || exit 1
+
+      - name: Health check - Admin
+        run: |
+          curl -f https://admin.launchmaniac.com/health || exit 1
+
+  notify:
+    name: Notify
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Send notification
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "Deployment successful"
+          else
+            echo "Deployment failed"
+          fi

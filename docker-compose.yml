@@ -1,0 +1,99 @@
+# Product of Launch Maniac LLC, Las Vegas, Nevada - (725) 444-8200 support@launchmaniac.com
+# Local development environment
+
+version: '3.8'
+
+services:
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+      - ./packages/shared:/app/packages/shared
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - GHL_CLIENT_ID=${GHL_CLIENT_ID}
+      - GHL_CLIENT_SECRET=${GHL_CLIENT_SECRET}
+      - GHL_REDIRECT_URI=${GHL_REDIRECT_URI}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - SMTP2GO_API_KEY=${SMTP2GO_API_KEY}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - auma-network
+
+  # Admin Dashboard (Vue.js)
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+      target: development
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src
+      - ./packages/shared:/app/packages/shared
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    networks:
+      - auma-network
+
+  # Customer Portal (Vue.js)
+  portal:
+    build:
+      context: .
+      dockerfile: packages/portal/Dockerfile
+      target: development
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./packages/portal/src:/app/packages/portal/src
+      - ./packages/shared:/app/packages/shared
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    networks:
+      - auma-network
+
+  # Internal Admin (Vue.js)
+  admin:
+    build:
+      context: .
+      dockerfile: packages/admin/Dockerfile
+      target: development
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./packages/admin/src:/app/packages/admin/src
+      - ./packages/shared:/app/packages/shared
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    networks:
+      - auma-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - auma-network
+
+networks:
+  auma-network:
+    driver: bridge
+
+volumes:
+  redis-data:

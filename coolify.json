@@ -1,0 +1,107 @@
+{
+  "$schema": "https://coolify.io/schema.json",
+  "version": "1.0",
+  "name": "auma-ghl-app",
+  "description": "AUMA GHL Marketplace App - Multi-tenant Mortgage Assistant",
+  "services": {
+    "backend": {
+      "type": "application",
+      "source": {
+        "type": "github",
+        "repository": "launchmaniac/auma-ghl-app",
+        "branch": "main"
+      },
+      "build": {
+        "dockerfile": "packages/backend/Dockerfile",
+        "context": "."
+      },
+      "deploy": {
+        "replicas": 2,
+        "resources": {
+          "memory": "512Mi",
+          "cpu": "0.5"
+        },
+        "healthcheck": {
+          "path": "/health",
+          "interval": 30,
+          "timeout": 10
+        }
+      },
+      "networking": {
+        "port": 3000,
+        "domain": "api.launchmaniac.com"
+      },
+      "environment": {
+        "NODE_ENV": "production",
+        "PORT": "3000"
+      }
+    },
+    "frontend": {
+      "type": "static",
+      "source": {
+        "type": "github",
+        "repository": "launchmaniac/auma-ghl-app",
+        "branch": "main"
+      },
+      "build": {
+        "dockerfile": "packages/frontend/Dockerfile",
+        "context": "."
+      },
+      "networking": {
+        "domain": "app.launchmaniac.com"
+      }
+    },
+    "portal": {
+      "type": "static",
+      "source": {
+        "type": "github",
+        "repository": "launchmaniac/auma-ghl-app",
+        "branch": "main"
+      },
+      "build": {
+        "dockerfile": "packages/portal/Dockerfile",
+        "context": "."
+      },
+      "networking": {
+        "domain": "portal.launchmaniac.com"
+      }
+    },
+    "admin": {
+      "type": "static",
+      "source": {
+        "type": "github",
+        "repository": "launchmaniac/auma-ghl-app",
+        "branch": "main"
+      },
+      "build": {
+        "dockerfile": "packages/admin/Dockerfile",
+        "context": "."
+      },
+      "networking": {
+        "domain": "admin.launchmaniac.com"
+      }
+    },
+    "mcp-server": {
+      "type": "application",
+      "source": {
+        "type": "github",
+        "repository": "launchmaniac/auma-ghl-app",
+        "branch": "main"
+      },
+      "build": {
+        "dockerfile": "packages/mcp-server/Dockerfile",
+        "context": "."
+      },
+      "deploy": {
+        "replicas": 1,
+        "resources": {
+          "memory": "256Mi",
+          "cpu": "0.25"
+        }
+      },
+      "environment": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

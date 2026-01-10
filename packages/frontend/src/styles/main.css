@@ -1,0 +1,52 @@
+/* Product of Launch Maniac LLC, Las Vegas, Nevada - (725) 444-8200 support@launchmaniac.com */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #1976d2;
+  --secondary-color: #424242;
+}
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow;
+  }
+}
+
+/* Primary color utilities with CSS variable */
+.bg-primary-50 { background-color: color-mix(in srgb, var(--primary-color) 10%, white); }
+.bg-primary-100 { background-color: color-mix(in srgb, var(--primary-color) 20%, white); }
+.bg-primary-500 { background-color: var(--primary-color); }
+.bg-primary-600 { background-color: color-mix(in srgb, var(--primary-color) 90%, black); }
+.bg-primary-700 { background-color: color-mix(in srgb, var(--primary-color) 80%, black); }
+
+.text-primary-600 { color: color-mix(in srgb, var(--primary-color) 90%, black); }
+.text-primary-700 { color: color-mix(in srgb, var(--primary-color) 80%, black); }
+.text-primary-800 { color: color-mix(in srgb, var(--primary-color) 70%, black); }
+
+.border-primary-500 { border-color: var(--primary-color); }
+
+.ring-primary-200 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 30%, white); }
+.ring-primary-500 { --tw-ring-color: var(--primary-color); }
+
+.focus\:ring-primary-500:focus { --tw-ring-color: var(--primary-color); }

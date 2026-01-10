@@ -1,0 +1,85 @@
+/* Product of Launch Maniac LLC, Las Vegas, Nevada - (725) 444-8200 support@launchmaniac.com */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1976d2;
+  --color-secondary: #424242;
+  --color-primary-50: color-mix(in srgb, var(--color-primary) 10%, white);
+  --color-primary-100: color-mix(in srgb, var(--color-primary) 20%, white);
+  --color-primary-500: var(--color-primary);
+  --color-primary-600: color-mix(in srgb, var(--color-primary) 90%, black);
+  --color-primary-700: color-mix(in srgb, var(--color-primary) 80%, black);
+}
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900 bg-gray-50;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 text-white font-medium rounded-lg transition-colors;
+    background-color: var(--color-primary);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-700);
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border border-gray-300 font-medium rounded-lg hover:bg-gray-50 transition-colors;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent;
+    --tw-ring-color: var(--color-primary);
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100;
+  }
+
+  .progress-step {
+    @apply flex flex-col items-center;
+  }
+
+  .progress-step-circle {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium;
+  }
+
+  .progress-step-completed {
+    @apply bg-green-500 text-white;
+  }
+
+  .progress-step-current {
+    @apply text-white ring-4;
+    background-color: var(--color-primary);
+    --tw-ring-color: var(--color-primary-100);
+  }
+
+  .progress-step-pending {
+    @apply bg-gray-200 text-gray-500;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

@@ -1,0 +1,34 @@
+{
+  "name": "auma-ghl-app",
+  "version": "1.0.0",
+  "description": "AUMA - Automated Unlicensed Mortgage Assistant for GHL Marketplace",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "db:migrate": "pnpm --filter @auma/backend run db:migrate",
+    "db:seed": "pnpm --filter @auma/backend run db:seed"
+  },
+  "keywords": [
+    "mortgage",
+    "ghl",
+    "gohighlevel",
+    "marketplace",
+    "safe-act",
+    "compliance",
+    "loan-processing"
+  ],
+  "author": "Launch Maniac LLC",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "devDependencies": {
+    "pg": "^8.16.3"
+  }
+}
