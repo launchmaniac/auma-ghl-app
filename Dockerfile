@@ -23,6 +23,7 @@ FROM node:20-alpine AS production
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 WORKDIR /app
 COPY --from=build /app/deploy ./
+RUN mkdir -p logs && chown -R nodejs:nodejs /app
 USER nodejs
 ENV NODE_ENV=production
 EXPOSE 3000
