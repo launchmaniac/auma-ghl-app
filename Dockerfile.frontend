@@ -13,10 +13,11 @@ FROM base AS build
 ARG VITE_API_URL=https://api.launchmaniac.com
 ENV VITE_API_URL=$VITE_API_URL
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/frontend/node_modules ./packages/frontend/node_modules
-COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/frontend ./packages/frontend
 COPY packages/shared ./packages/shared
+WORKDIR /app/packages/shared
+RUN pnpm build
 WORKDIR /app/packages/frontend
 RUN pnpm build
 
