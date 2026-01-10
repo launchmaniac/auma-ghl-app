@@ -5,13 +5,13 @@ FROM node:20-alpine AS build
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
+# Copy everything needed for install and build
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY packages/backend/package.json ./packages/backend/
-COPY packages/shared/package.json ./packages/shared/
-RUN pnpm install --frozen-lockfile
-
 COPY packages/backend ./packages/backend
 COPY packages/shared ./packages/shared
+
+# Install and build
+RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @auma/shared build
 RUN pnpm --filter @auma/backend build
 

@@ -8,13 +8,13 @@ WORKDIR /app
 ARG VITE_API_URL=https://api.launchmaniac.com
 ENV VITE_API_URL=$VITE_API_URL
 
+# Copy everything needed for install and build
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY packages/frontend/package.json ./packages/frontend/
-COPY packages/shared/package.json ./packages/shared/
-RUN pnpm install --frozen-lockfile
-
 COPY packages/frontend ./packages/frontend
 COPY packages/shared ./packages/shared
+
+# Install and build
+RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @auma/shared build
 RUN pnpm --filter @auma/frontend build
 
