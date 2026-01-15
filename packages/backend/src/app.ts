@@ -21,6 +21,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     config.portalUrl,
+    'https://auma.launchmaniac.com',
     'https://admin.launchmaniac.com',
     'https://app.launchmaniac.com',
     'https://app.gohighlevel.com',
