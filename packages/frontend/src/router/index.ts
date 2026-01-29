@@ -7,6 +7,11 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: '/not-authenticated',
+      name: 'not-authenticated',
+      component: () => import('@/views/NotAuthenticated.vue'),
+    },
+    {
       path: '/app',
       name: 'app-callback',
       component: () => import('@/views/AppCallback.vue'),
@@ -54,10 +59,22 @@ router.beforeEach(async (to, _from, next) => {
     return;
   }
 
+  // Check for dev bypass activation via URL
+  if (to.query.dev === 'true' && !authStore.isAuthenticated) {
+    console.log('[AUMA] Dev bypass activated - reload to apply');
+    window.location.reload();
+    return;
+  }
+
+  // Log dev mode status
+  if (authStore.devBypass) {
+    console.log('[AUMA] Running in DEV MODE - Exit with authStore.exitDevMode()');
+  }
+
   // Check authentication for protected routes
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // In a real app, redirect to GHL login or show error
-    console.error('Authentication required');
+    console.error('[AUMA] Authentication required. Add ?dev=true to URL for testing.');
+    next({ name: 'not-authenticated' });
     return;
   }
 
