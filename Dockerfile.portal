@@ -1,24 +1,23 @@
 # Product of Launch Maniac LLC, Las Vegas, Nevada - (725) 444-8200 support@launchmaniac.com
-FROM node:20-alpine AS base
+# AUMA Portal Dockerfile
+
+FROM node:20-alpine AS build
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
-FROM base AS deps
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY packages/portal/package.json ./packages/portal/
-COPY packages/shared/package.json ./packages/shared/
-RUN pnpm install --frozen-lockfile
-
-FROM base AS build
 ARG VITE_API_URL=https://api.launchmaniac.com
 ENV VITE_API_URL=$VITE_API_URL
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/portal/node_modules ./packages/portal/node_modules
-COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+
+# Copy everything needed for install and build
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/portal ./packages/portal
 COPY packages/shared ./packages/shared
-WORKDIR /app/packages/portal
-RUN pnpm build
+
+# Install and build (force dev mode to include devDependencies like tsup)
+ENV NODE_ENV=development
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @auma/shared build
+RUN pnpm --filter @auma/portal build
 
 FROM nginx:alpine AS production
 COPY --from=build /app/packages/portal/dist /usr/share/nginx/html
